@@ -1,37 +1,63 @@
 import React from 'react'
-import { RecoilRoot, atom, useRecoilState } from 'recoil'
+import {
+  RecoilRoot,
+  atom,
+  selector,
+  useRecoilState,
+  useRecoilValue,
+} from 'recoil'
 
-const countState = atom({
-  key: 'countState',
-  default: 0,
+const textState = atom({
+  key: 'textState',
+  default: '',
+})
+
+const charCountState = selector({
+  key: 'charCountState',
+  get: ({ get }) => {
+    const text = get(textState)
+
+    return text.length
+  },
 })
 
 function App() {
   return (
     <RecoilRoot>
-      <Counter />
+      <CharacterCounter />
     </RecoilRoot>
   )
 }
 
-function Counter() {
-  const [count, setCount] = useRecoilState(countState)
+function CharacterCounter() {
+  return (
+    <div>
+      <TextInput />
+      <CharacterCount />
+    </div>
+  )
+}
 
-  function addCount() {
-    setCount(count + 1)
-  }
+function TextInput() {
+  const [text, setText] = useRecoilState(textState)
 
-  function subCount() {
-    setCount(count - 1)
+  const onChange = (event) => {
+    setText(event.target.value)
   }
 
   return (
     <div>
-      <button onClick={addCount}>up</button>
-      <button onClick={subCount}>down</button>
-      <p>{count}</p>
+      <input type='text' value={text} onChange={onChange} />
+      <br />
+      Echo: {text}
     </div>
   )
+}
+
+function CharacterCount() {
+  const count = useRecoilValue(charCountState)
+
+  return <>Character Count: {count}</>
 }
 
 export default App
